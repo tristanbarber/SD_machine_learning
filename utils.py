@@ -1,6 +1,6 @@
 from concurrent.futures import thread
 import math
-import numpy
+import numpy as np
 import time
 import pygame
 from pygame.locals import *

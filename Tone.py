@@ -5,17 +5,16 @@ import time
 import pygame
 
 
-pygame.init()
-bits = 16
-sample_rate = 44100
-pygame.mixer.pre_init(sample_rate, bits, channels=2)
-
-
 def sine_x(amp, freq, t):
     return int(round(amp * math.sin(2 * math.pi * freq * t)))
 
 
 def sine(frequency, duration=1):
+    pygame.init()
+    bits = 16
+    sample_rate = 44100
+    pygame.mixer.pre_init(sample_rate, bits, channels=2)
+
     num_samples = int(round(duration * sample_rate))  # Get the sample rate
 
     amplitude = 2 ** (16 - 1) - 1  # Assuming 16-bit audio
@@ -36,6 +35,5 @@ def sine(frequency, duration=1):
 
 # Clean up
 pygame.mixer.quit()
-
 
 

@@ -6,33 +6,79 @@ import math
 import time
 import pygame
 from Note import Note
+from VideoGet import VideoGet
+from VideoShow import VideoShow
+from Inference import Inference
+from SoundGen import SoundGen
 
-pygame.init()
-bits = 16
-sample_rate = 44100
-pygame.mixer.pre_init(sample_rate, bits, channels=2)
-
-octave = 2
+octave = 4
 key_sig = 1
 accidental = False
 synth_mode = True
 
 # assigns a variable for our webcam output and a variable for our hand detector
-cap = cv2.VideoCapture(0)
-detector = HandDetector(maxHands=1)
-synth_classifier = Classifier("SynthModeModels/Keras/keras_model.h5", "SynthModeModels/Keras/labels.txt")
-chord_classifier = Classifier("ChordModeModels/Keras/keras_model.h5", "ChordModeModels/Keras/labels.txt")
+# cap = cv2.VideoCapture(0)
+# detector = HandDetector(maxHands=1)
+# synth_classifier = Classifier("SynthModeModels/Keras/keras_model.h5", "SynthModeModels/Keras/labels.txt")
+# chord_classifier = Classifier("ChordModeModels/Keras/keras_model.h5", "ChordModeModels/Keras/labels.txt")
 
 # constants
 offset = 20
 imgSize = 300
 
-folder = "Data/Mode"
-counter = 0
 
-labels = ["A", "B", "C", "D", "E", "F", "G", "1", "2", "3", "4", "5", "6", "7", "KeySig", "Octave", "Mode",
-          "Accidental", "Sustain"]
+synth_labels = ["A", "B", "C", "D", "E", "F", "G", "Octave", "KeySig", " "]
+chord_labels = ["1", "2", "3", "4", "5", "6", "7", "KeySig"]
 
+
+
+
+# Current Status: Audio plays. Need to figure out how to stop audio transmission and start new one if the note changes.
+def threadStart(source=0):
+    video_getter = VideoGet(source).start()
+    video_shower = VideoShow(video_getter.frame).start()
+    inference = Inference(video_getter.frame).start()
+    generator = SoundGen(synth_mode, octave, accidental).start()
+
+    while True:
+
+        if video_getter.stopped or video_shower.stopped or inference.stopped or generator.stopped:
+            video_shower.stop()
+            video_getter.stop()
+            inference.stop()
+            generator.stop()
+            break
+
+        frame = video_getter.frame
+        inference.frame = frame
+        index = inference.index
+        generator.prediction = inference.prediction
+        generator.index = inference.index
+        cv2.putText(frame, "Inference: " + str(synth_labels[index]), (10, 60), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 0, 255), 1)
+        cv2.putText(frame, "FPS: " + str(inference.framerate), (10, 30), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 0, 255), 1)
+        video_shower.frame = frame
+
+
+threadStart(0)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+'''
 while True:
     # read webcam data and find any hands detected within it
     success, img = cap.read()
@@ -147,6 +193,7 @@ while True:
     elif key == ord("q"):
         print("exiting")
         break
+        '''
 
 
 

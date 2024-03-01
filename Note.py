@@ -43,4 +43,3 @@ class Note:
         for thread in threads:
             thread.join()
 
-
