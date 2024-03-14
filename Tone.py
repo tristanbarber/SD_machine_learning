@@ -1,3 +1,4 @@
+from threading import Thread
 import math
 import numpy
 import numpy as np
@@ -9,31 +10,38 @@ def sine_x(amp, freq, t):
     return int(round(amp * math.sin(2 * math.pi * freq * t)))
 
 
-def sine(frequency, duration=1):
-    pygame.init()
-    bits = 16
-    sample_rate = 44100
-    pygame.mixer.pre_init(sample_rate, bits, channels=2)
+class Tone:
 
-    num_samples = int(round(duration * sample_rate))  # Get the sample rate
+    def __init__(self, frequency=0):
+        self.frequency = frequency
+        self.stopped = False
+        self.sound = None
 
-    amplitude = 2 ** (16 - 1) - 1  # Assuming 16-bit audio
+    def start(self):
+        Thread(target=self.sine, args=()).start()
+        return self
 
-    samples = numpy.zeros((num_samples, 2), dtype=np.int16)
-    for s in range(num_samples):
-        samples[s] = sine_x(amplitude, frequency, float(s) / sample_rate)
+    def sine(self, duration=1):
+        while not self.stopped:
+            if self.sound is None:
+                pygame.init()
+                bits = 16
+                sample_rate = 44100
+                pygame.mixer.pre_init(sample_rate, bits, channels=2)
 
-    sound = pygame.mixer.Sound(samples)
-    one_sec = 1000  # Milliseconds
-    sound.play(loops=1, maxtime=int(duration * one_sec))
-    time.sleep(duration)
+                num_samples = int(round(duration * sample_rate))  # Get the sample rate
 
+                amplitude = 2 ** (16 - 1) - 1  # Assuming 16-bit audio
 
-# Example usage
-# tone = Tone()
-# tone.sine(440, 10)
+                samples = numpy.zeros((num_samples, 2), dtype=np.int16)
+                for s in range(num_samples):
+                    samples[s] = sine_x(amplitude, self.frequency, float(s) / sample_rate)
 
-# Clean up
-pygame.mixer.quit()
+                self.sound = pygame.mixer.Sound(samples)
+                self.sound.play(loops=-1)
+
+    def stop(self):
+        self.stopped = True
+        pygame.mixer.quit()
 
 

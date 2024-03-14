@@ -1,10 +1,12 @@
 from threading import Thread
+import tensorflow
 import cv2  # used to capture data from the webcam
 from cvzone.HandTrackingModule import HandDetector  # pre-build ML model for Hand Tracking
 from cvzone.ClassificationModule import Classifier
 import numpy as np
 import math
 import time
+import tensorflow as tf
 
 detector = HandDetector(maxHands=1)
 synth_classifier = Classifier("SynthModeModels/Keras/keras_model.h5", "SynthModeModels/Keras/labels.txt")
@@ -13,9 +15,6 @@ chord_classifier = Classifier("ChordModeModels/Keras/keras_model.h5", "ChordMode
 # constants
 offset = 20
 imgSize = 300
-
-labels = ["A", "B", "C", "D", "E", "F", "G", "1", "2", "3", "4", "5", "6", "7", "KeySig", "Octave", "Mode",
-          "Accidental", "Sustain"]
 
 
 class Inference:
@@ -26,6 +25,7 @@ class Inference:
         self.prediction = None
         self.index = 9
         self.framerate = 0
+        self.synth_mode = True
 
     def start(self):
         Thread(target=self.inference, args=()).start()
@@ -71,9 +71,11 @@ class Inference:
                         hGap = math.ceil((imgSize - h0cal) / 2)
                         imgWhite[hGap:h0cal + hGap, :] = imgResize
 
-                    self.prediction, self.index = synth_classifier.getPrediction(imgWhite)
-                    # chord_prediction, chord_index = chord_classifier.getPrediction(imgWhite)
-                    # cv2.putText(self.frame, labels[index], (x0, y0 - 20), cv2.FONT_HERSHEY_COMPLEX, 2, (255, 0, 255), 2)
+                    if self.synth_mode is True:
+                        self.prediction, self.index = synth_classifier.getPrediction(imgWhite)
+                    else:
+                        self.prediction, self.index = chord_classifier.getPrediction(imgWhite)
+
                 else:
                     self.prediction = None
                     self.index = 9
@@ -85,10 +87,9 @@ class Inference:
                     start_time = time.time()
 
             except Exception as e:
+                self.prediction = None
+                self.index = 9
                 print(e)
-
-        if cv2.waitKey(1) == ord("q"):
-            self.stopped = True
 
     def stop(self):
         self.stopped = True
