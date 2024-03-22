@@ -36,7 +36,7 @@ class VideoShow:
                 else:
                     self.sustain = True
 
-                serial_message = "Sustain is" + str(self.sustain)
+                serial_message = "Sustain is" + str(self.sustain) + "\n"
                 print(serial_message)
 
                 try:
@@ -51,7 +51,7 @@ class VideoShow:
                 else:
                     self.synth_mode = True
 
-                serial_message = "Synth mode is" + str(self.synth_mode)
+                serial_message = "Synth mode is" + str(self.synth_mode) + "\n"
                 print(serial_message)
 
                 try:
@@ -62,7 +62,7 @@ class VideoShow:
             elif key == ord("q"):
 
                 try:
-                    ser.write(b'Quit')
+                    ser.write(b'Quit\n')
                 except:
                     print("Serial send failed")
 

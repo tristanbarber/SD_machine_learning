@@ -98,7 +98,7 @@ class SoundGen:
                         else:
                             self.octave += 1
 
-                        serial_message = "octave = " + str(self.octave)
+                        serial_message = "octave = " + str(self.octave) + "\n"
                         print(serial_message)
 
                         try:
@@ -120,7 +120,7 @@ class SoundGen:
                         else:
                             self.accidental = True
 
-                        serial_message = "accidental = " + str(self.accidental)
+                        serial_message = "accidental = " + str(self.accidental)  + "\n"
                         print(serial_message)
                         try:
                             ser.write(serial_message.encode())
@@ -159,7 +159,7 @@ class SoundGen:
 
                     serial_message = key_signature_array[self.key_sig][idx] + \
                                      key_signature_array[self.key_sig][idx + 2] + \
-                                     key_signature_array[self.key_sig][idx + 4]
+                                     key_signature_array[self.key_sig][idx + 4] + "\n"
 
                     try:
                         ser.write(serial_message.encode())
@@ -181,7 +181,7 @@ class SoundGen:
                     else:
                         self.key_sig += 1
 
-                    serial_message = "Key_Sig = " + str(self.key_sig)
+                    serial_message = "Key_Sig = " + str(self.key_sig) + "\n"
                     print(serial_message)
 
                     try:
