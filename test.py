@@ -9,7 +9,8 @@ key_sig = 0
 accidental = False
 synth_mode = True
 
-synth_labels = ["A", "B", "C", "D", "E", "F", "G", "Octave", "KeySig", " "]
+synth_labels_no_accidental = ["A", "B", "C", "D", "E", "F", "G", "Octave", "KeySig", " "]
+synth_labels_accidental = ['Bb', 'C', 'C#', 'Eb', 'F', 'F#', 'Ab', "Octave", "KeySig", " "]
 chord_labels = ["1", "2", "3", "4", "5", "6", "7", "KeySig", " ", " "]
 
 
@@ -39,7 +40,10 @@ def threadStart(source=0):
         generator.index = inference.index
 
         if video_shower.synth_mode is True:
-            cv2.putText(frame, "Inference: " + str(synth_labels[index]), (10, 60), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 0, 255), 1)
+            if generator.accidental is False:
+                cv2.putText(frame, "Inference: " + str(synth_labels_no_accidental[index]), (10, 60), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 0, 255), 1)
+            else:
+                cv2.putText(frame, "Inference: " + str(synth_labels_accidental[index]), (10, 60), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 0, 255), 1)
         else:
             cv2.putText(frame, "Inference: " + str(chord_labels[index]), (10, 60), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 0, 255), 1)
         cv2.putText(frame, "FPS: " + str(inference.framerate), (10, 30), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 0, 255), 1)
@@ -47,7 +51,3 @@ def threadStart(source=0):
 
 
 threadStart(0)
-
-
-
-

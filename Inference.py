@@ -9,6 +9,7 @@ import time
 import tensorflow as tf
 
 detector = HandDetector(maxHands=1)
+detector2 = HandDetector(maxHands=1)
 synth_classifier = Classifier("SynthModeModels/Keras/keras_model.h5", "SynthModeModels/Keras/labels.txt")
 chord_classifier = Classifier("ChordModeModels/Keras/keras_model.h5", "ChordModeModels/Keras/labels.txt")
 
@@ -40,15 +41,15 @@ class Inference:
             try:
                 # read webcam data and find any hands detected within it
                 image = self.frame
-                hands, img = detector.findHands(image)
+                hands, img = detector.findHands(image, draw=False)
                 if hands:
                     # assign a variable to our detected hand and get its dimensions
                     hand0 = hands[0]
                     x0, y0, w0, h0 = hand0['bbox']
 
-                    # create a cropped image displaying just the hand (plus an offset), and the background white screen
-                    # use imgOutput to get rid of skeleton artifacts from hand tracker
-                    imgCrop0 = img[y0 - offset:y0 + h0 + offset, x0 - offset: x0 + w0 + offset]
+                    offset_height = int(h0 * 0.15)
+                    offset_width = int(w0 * 0.15)
+                    img_cropped = img[y0 - offset_height:y0 + h0 + offset_height, x0 - offset_width: x0 + w0 + offset_width]
                     imgWhite = np.ones((imgSize, imgSize, 3), np.uint8) * 255
 
                     # find the aspect ratio of the image to determine how to resize
@@ -58,18 +59,37 @@ class Inference:
                     if aspectRatio > 1:
                         k = imgSize / h0
                         w0cal = math.ceil(k * w0)
-                        imgResize = cv2.resize(imgCrop0, (w0cal, imgSize))
-                        imgResizeShape = imgResize.shape
-                        wGap = math.ceil((imgSize - w0cal) / 2)
-                        imgWhite[:, wGap:w0cal + wGap] = imgResize
+                        imgResize = cv2.resize(img_cropped, (w0cal, imgSize))
                     # resize the image based on the width, then center it on top of the background
                     else:
                         k = imgSize / w0
                         h0cal = math.ceil(k * h0)
-                        imgResize = cv2.resize(imgCrop0, (imgSize, h0cal))
-                        imgResizeShape = imgResize.shape
-                        hGap = math.ceil((imgSize - h0cal) / 2)
-                        imgWhite[hGap:h0cal + hGap, :] = imgResize
+                        imgResize = cv2.resize(img_cropped, (imgSize, h0cal))
+
+                    hands, imgResize = detector2.findHands(imgResize, draw=True)
+                    if hands:
+                        hand0 = hands[0]
+                        x0, y0, w0, h0 = hand0['bbox']
+
+                        # find the aspect ratio of the image to determine how to resize
+                        aspectRatio = h0 / w0
+
+                        # resize the image based on the height, then center it on top of the background
+                        if aspectRatio > 1:
+                            k = imgSize / h0
+                            w0cal = math.ceil(k * w0)
+                            imgResize = cv2.resize(imgResize, (w0cal, imgSize))
+                            imgResizeShape = imgResize.shape
+                            wGap = math.ceil((imgSize - w0cal) / 2)
+                            imgWhite[:, wGap:w0cal + wGap] = imgResize
+                        # resize the image based on the width, then center it on top of the background
+                        else:
+                            k = imgSize / w0
+                            h0cal = math.ceil(k * h0)
+                            imgResize = cv2.resize(imgResize, (imgSize, h0cal))
+                            imgResizeShape = imgResize.shape
+                            hGap = math.ceil((imgSize - h0cal) / 2)
+                            imgWhite[hGap:h0cal + hGap, :] = imgResize
 
                     if self.synth_mode is True:
                         self.prediction, self.index = synth_classifier.getPrediction(imgWhite)
