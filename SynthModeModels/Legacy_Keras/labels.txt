@@ -6,4 +6,4 @@
 5 F
 6 G
 7 Octave
-8 Accidental
+8 KeySig

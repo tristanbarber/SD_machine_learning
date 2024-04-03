@@ -9,8 +9,8 @@ key_sig = 0
 accidental = False
 synth_mode = True
 
-synth_labels_no_accidental = ["A", "B", "C", "D", "E", "F", "G", "Octave", "KeySig", " "]
-synth_labels_accidental = ['Bb', 'C', 'C#', 'Eb', 'F', 'F#', 'Ab', "Octave", "KeySig", " "]
+synth_labels_no_accidental = ["A", "B", "C", "D", "E", "F", "G", "Octave", "Accidental", " "]
+synth_labels_accidental = ['Bb', 'C', 'C#', 'Eb', 'F', 'F#', 'Ab', "Octave", "Accidental", " "]
 chord_labels = ["1", "2", "3", "4", "5", "6", "7", "KeySig", " ", " "]
 
 
