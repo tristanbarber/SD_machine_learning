@@ -86,7 +86,7 @@ class SoundGen:
                     except:
                         print("Serial send failed")
                 # Updating the octave
-                elif idx == 7 and pred[7] > 0.95:
+                elif idx == 7 and pred[7] > 0.80:
                     time.sleep(0.2)
                     if self.index == 7:
                         self.note_arr[0].stop()
@@ -108,7 +108,7 @@ class SoundGen:
 
                         time.sleep(0.8)
                 # Updating the accidental
-                elif idx == 8 and pred[8] > 0.98:
+                elif idx == 8 and pred[8] > 0.80:
                     time.sleep(0.2)
                     if self.index == 8:
                         self.note_arr[0].stop()

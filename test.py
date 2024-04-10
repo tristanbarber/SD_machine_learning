@@ -14,7 +14,7 @@ synth_labels_accidental = ['Bb', 'C', 'C#', 'Eb', 'F', 'F#', 'Ab', "Octave", "Ac
 chord_labels = ["1", "2", "3", "4", "5", "6", "7", "KeySig", " ", " "]
 
 
-def threadStart(source=0):
+def threadStart(source=1):
     video_getter = VideoGet(source).start()
     video_shower = VideoShow(video_getter.frame).start()
     inference = Inference(video_getter.frame).start()

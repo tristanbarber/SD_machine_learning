@@ -91,11 +91,13 @@ class Inference:
                             hGap = math.ceil((imgSize - h0cal) / 2)
                             imgWhite[hGap:h0cal + hGap, :] = imgResize
 
-                    if self.synth_mode is True:
-                        self.prediction, self.index = synth_classifier.getPrediction(imgWhite)
+                        if self.synth_mode is True:
+                            self.prediction, self.index = synth_classifier.getPrediction(imgWhite)
+                        else:
+                            self.prediction, self.index = chord_classifier.getPrediction(imgWhite)
                     else:
-                        self.prediction, self.index = chord_classifier.getPrediction(imgWhite)
-
+                        self.prediction = None
+                        self.index = 9
                 else:
                     self.prediction = None
                     self.index = 9
