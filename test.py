@@ -3,6 +3,7 @@ from VideoGet import VideoGet
 from VideoShow import VideoShow
 from Inference import Inference
 from SoundGen import SoundGen
+import serial
 
 octave = 4
 key_sig = 0
@@ -13,12 +14,27 @@ synth_labels_no_accidental = ["A", "B", "C", "D", "E", "F", "G", "Octave", "Acci
 synth_labels_accidental = ['Bb', 'C', 'C#', 'Eb', 'F', 'F#', 'Ab', "Octave", "Accidental", " "]
 chord_labels = ["1", "2", "3", "4", "5", "6", "7", "KeySig", " ", " "]
 
+# Serial Set up
+# on Mac, use "python -m serial.tools.list_ports" to determine what port to use on the line below
+serial_port_vid = 'COM3'
+baud_rate = 9600
+
+global ser
+try:
+    ser = serial.Serial(serial_port_vid, baud_rate, timeout=0.001)
+    print("serial port opened successfully.")
+except serial.SerialException as e:
+    print(f"Failed to open serial port {e}")
+    ser = None
+except Exception as e:
+    print(f"An error occurred: {e}")
+    ser = None
 
 def threadStart(source=1):
     video_getter = VideoGet(source).start()
-    video_shower = VideoShow(video_getter.frame).start()
+    video_shower = VideoShow(video_getter.frame, ser=ser).start()
     inference = Inference(video_getter.frame).start()
-    generator = SoundGen(synth_mode, octave, key_sig, accidental).start()
+    generator = SoundGen(synth_mode, octave, key_sig, accidental, ser=ser).start()
 
     while True:
 

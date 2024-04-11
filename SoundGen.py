@@ -3,25 +3,6 @@ import serial
 from Note import Note
 from threading import Thread
 
-# Serial Set up
-# on Mac, use "python -m serial.tools.list_ports" to determine what port to use on the line below
-
-serial_port = 'COM3'
-baud_rate = 9600
-
-global ser
-try:
-        ser = serial.Serial(serial_port, baud_rate, timeout=0.001)
-        print("serial port opened succesfully.")
-except serial.SerialException as e:
-        print(f"Failed to open serial port {e}")
-        ser = None
-except Exception as e:
-        print(f"An error occurred: {e}")
-        ser = None
-
-
-
 key_signature_array = \
     [
         ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5', 'D5', 'E5', 'F5'],
@@ -46,7 +27,7 @@ volume_array = [1.5, 1.5, 1, 0.6, 0.3, 0.4]
 
 class SoundGen:
 
-    def __init__(self, synth_mode=True, octave=4, key_sig=0, accidental=False):
+    def __init__(self, synth_mode=True, octave=4, key_sig=0, accidental=False, ser=None):
         self.synth_mode = synth_mode
         self.stopped = False
         self.sustain = False
@@ -60,6 +41,7 @@ class SoundGen:
         self.C2 = Note()
         self.C3 = Note()
         self.note_arr = [self.C1, self.C2, self.C3]
+        self.ser = ser
 
     def start(self):
         Thread(target=self.play_sound, args=()).start()
@@ -94,7 +76,7 @@ class SoundGen:
                     self.note_arr[self.note_index].start(note_to_play, volume_array[octa - 2])
 
                     try:
-                        ser.write(note_to_play.encode() + b'\n')
+                        self.ser.write(note_to_play.encode() + b'\n')
                     except:
                         print("Serial send failed")
                 # Updating the octave
@@ -114,7 +96,7 @@ class SoundGen:
                         print(serial_message)
 
                         try:
-                            ser.write(serial_message.encode() + b'\n')
+                            self.ser.write(serial_message.encode() + b'\n')
                         except:
                             print("Serial send failed")
 
@@ -135,7 +117,7 @@ class SoundGen:
                         serial_message = "accidental = " + str(self.accidental)  + "\n"
                         print(serial_message)
                         try:
-                            ser.write(serial_message.encode()+ b'\n')
+                            self.ser.write(serial_message.encode()+ b'\n')
                         except:
                             print("Serial send failed")
 
@@ -174,7 +156,7 @@ class SoundGen:
                                      key_signature_array[self.key_sig][idx + 4] + "\n"
 
                     try:
-                        ser.write(serial_message.encode()+ b'\n')
+                        self.ser.write(serial_message.encode()+ b'\n')
                     except:
                         print("Serial send failed")
 
@@ -197,7 +179,7 @@ class SoundGen:
                     print(serial_message)
 
                     try:
-                        ser.write(serial_message.encode()+ b'\n')
+                        self.ser.write(serial_message.encode()+ b'\n')
                     except:
                         print("Serial send failed")
 

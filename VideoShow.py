@@ -2,32 +2,17 @@ from threading import Thread
 import serial
 import cv2
 
-# Serial Set up
-# on Mac, use "python -m serial.tools.list_ports" to determine what port to use on the line below
-serial_port_vid = 'COM3'
-baud_rate = 9600
-
-global ser
-try:
-        ser = serial.Serial(serial_port_vid, baud_rate, timeout=0.001)
-        print("serial port opened succesfully.")
-except serial.SerialException as e:
-        print(f"Failed to open serial port {e}")
-        ser = None
-except Exception as e:
-        print(f"An error occurred: {e}")
-        ser = None
-
 class VideoShow:
     """
     Class that continuously shows a frame using a dedicated thread.
     """
 
-    def __init__(self, frame=None, synth_mode=True):
+    def __init__(self, frame=None, synth_mode=True, ser=None):
         self.frame = frame
         self.stopped = False
         self.synth_mode = synth_mode
         self.sustain = False
+        self.ser = ser
 
     def start(self):
         Thread(target=self.show, args=()).start()
@@ -49,7 +34,7 @@ class VideoShow:
                 print(serial_message)
 
                 try:
-                    ser.write(serial_message.encode() + b'\n')
+                    self.ser.write(serial_message.encode() + b'\n')
                 except:
                     print("Serial send failed")
             # Toggle between synth and chord mode using 'm' key
@@ -64,14 +49,14 @@ class VideoShow:
                 print(serial_message)
 
                 try:
-                    ser.write(serial_message.encode() + b'\n')
+                    self.ser.write(serial_message.encode() + b'\n')
                 except:
                     print("Serial send failed")
             # quit program using 'q' key
             elif key == ord("q"):
 
                 try:
-                    ser.write(b'Quit\n')
+                    self.ser.write(b'Quit\n')
                 except:
                     print("Serial send failed")
 
