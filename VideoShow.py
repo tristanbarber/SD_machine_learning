@@ -23,38 +23,26 @@ class VideoShow:
             cv2.imshow("Video", self.frame)
             # handle all keyboard input through this thread
             key = cv2.waitKey(1) & 0xFF
-            # Toggle sustain using 's' key
-            if key == ord("s"):
-                if self.sustain is True:
-                    self.sustain = False
-                else:
-                    self.sustain = True
 
-                serial_message = "Sustain is" + str(self.sustain) + "\n"
-                print(serial_message)
-
-                try:
-                    self.ser.write(serial_message.encode() + b'\n')
-                except:
-                    print("Serial send failed")
             # Toggle between synth and chord mode using 'm' key
-            elif key == ord("m"):
+            if key == ord("m"):
 
                 if self.synth_mode is True:
                     self.synth_mode = False
+                    serial_message = "MODE:Chord\n"
                 else:
                     self.synth_mode = True
+                    serial_message = "MODE:Synthesizer\n"
 
-                serial_message = "Synth mode is" + str(self.synth_mode) + "\n"
                 print(serial_message)
 
                 try:
-                    self.ser.write(serial_message.encode() + b'\n')
+                    self.ser.write(serial_message.encode())
                 except:
                     print("Serial send failed")
+
             # quit program using 'q' key
             elif key == ord("q"):
-
                 try:
                     self.ser.write(b'Quit\n')
                 except:

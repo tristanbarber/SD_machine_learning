@@ -15,7 +15,6 @@ synth_labels_accidental = ['Bb', 'C', 'C#', 'Eb', 'F', 'F#', 'Ab', "Octave", "Ac
 chord_labels = ["1", "2", "3", "4", "5", "6", "7", "KeySig", " ", " "]
 
 # Serial Set up
-# on Mac, use "python -m serial.tools.list_ports" to determine what port to use on the line below
 serial_port_vid = 'COM3'
 baud_rate = 9600
 

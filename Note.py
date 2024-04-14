@@ -31,8 +31,6 @@ class Note:
 
         self.volume = volume
 
-        print("Playing" + str(note))
-
         Thread(target=self.sine(frequency), args=()).start()
 
         return self
