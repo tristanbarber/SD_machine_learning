@@ -9,6 +9,7 @@ octave = 4
 key_sig = 0
 accidental = False
 synth_mode = True
+gamma_adjustment = 1.0
 
 synth_labels_no_accidental = ["A", "B", "C", "D", "E", "F", "G", "Octave", "Accidental", " "]
 synth_labels_accidental = ['Bb', 'C', 'C#', 'Eb', 'F', 'F#', 'Ab', "Octave", "Accidental", " "]
@@ -30,7 +31,7 @@ except Exception as e:
     ser = None
 
 def threadStart(source=1):
-    video_getter = VideoGet(source).start()
+    video_getter = VideoGet(source, gamma_adjustment).start()
     video_shower = VideoShow(video_getter.frame, ser=ser).start()
     inference = Inference(video_getter.frame).start()
     generator = SoundGen(synth_mode, octave, key_sig, accidental, ser=ser).start()
