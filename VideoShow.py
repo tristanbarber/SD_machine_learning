@@ -36,17 +36,17 @@ class VideoShow:
 
                 print(serial_message)
 
-                try:
-                    self.ser.write(serial_message.encode())
-                except:
-                    print("Serial send failed")
+                # try:
+                    # self.ser.write(serial_message.encode())
+                # except:
+                    # print("Serial send failed")
 
             # quit program using 'q' key
             elif key == ord("q"):
-                try:
-                    self.ser.write(b'Quit\n')
-                except:
-                    print("Serial send failed")
+                # try:
+                    # self.ser.write(b'Quit\n')
+                # except:
+                    # print("Serial send failed")
 
                 self.stopped = True
 

@@ -5,6 +5,15 @@ import math
 import time
 from PIL import Image
 
+
+def adjust_gamma(image, gamma=1.0):
+    invGamma = 1.0 / gamma
+    table = np.array([
+      ((i / 255.0) ** invGamma) * 255
+      for i in np.arange(0, 256)])
+    return cv2.LUT(image.astype(np.uint8), table.astype(np.uint8))
+
+
 # assigns a variable for our webcam output and a variable for our hand detector
 cap = cv2.VideoCapture(0)
 detector = HandDetector(maxHands=1)
@@ -15,6 +24,8 @@ offset = 20
 offset0 = 100
 imgSize = 300
 
+gamma_adjustment = 1.0
+
 folder = "Data/KeySig"
 counter = 0
 
@@ -23,6 +34,7 @@ while True:
         # read webcam data and find any hands detected within it
         success, img = cap.read()
         img_copy = img
+        img = adjust_gamma(img, gamma_adjustment)
         hands, img = detector.findHands(img, draw=False)
 
         if hands:

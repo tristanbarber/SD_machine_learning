@@ -19,7 +19,7 @@ key_signature_array = \
         ['B3', 'C#4', 'Eb4', 'E4', 'F#4', 'Ab4', 'Bb4', 'B4', 'C#5', 'Eb5', 'E5'],
     ]
 
-key_signature_names_array = [ 'CMajor', 'C#Major', 'DMajor', 'EbMajor', 'EMajor', 'FMajor', 'F#Major', 'GMajor', 'AbMajor', 'AMajor', 'BbMajor', 'BMajor']
+key_signature_names_array = ['CMajor', 'C#Major', 'DMajor', 'EbMajor', 'EMajor', 'FMajor', 'F#Major', 'GMajor', 'AbMajor', 'AMajor', 'BbMajor', 'BMajor']
 
 note_array = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
 note_array_accidental = ['Bb', 'C', 'C#', 'Eb', 'F', 'F#', 'Ab']
@@ -77,7 +77,7 @@ class SoundGen:
 
                     self.note_arr[self.note_index].start(note_to_play, volume_array[octa - 2])
 
-                    serial_message = "NOTE:" + note_to_play + "\n"
+                    serial_message = note_to_play[0:0] + "\n"
                     print(serial_message)
 
                     try:
@@ -98,13 +98,13 @@ class SoundGen:
                         else:
                             self.octave += 1
 
-                        serial_message = "OCTAVE:" + str(self.octave) + "\n"
-                        print(serial_message)
+                        # serial_message = "OCTAVE:" + str(self.octave) + "\n"
+                        # print(serial_message)
 
-                        try:
-                            self.ser.write(serial_message.encode())
-                        except:
-                            print("Serial send failed")
+                        # try:
+                            # self.ser.write(serial_message.encode())
+                        # except:
+                            # print("Serial send failed")
 
                         time.sleep(0.8)
 
@@ -121,12 +121,12 @@ class SoundGen:
                         else:
                             self.accidental = True
 
-                        serial_message = "ACCIDENTAL:" + str(self.accidental) + "\n"
-                        print(serial_message)
-                        try:
-                            self.ser.write(serial_message.encode())
-                        except:
-                            print("Serial send failed")
+                        # serial_message = "ACCIDENTAL:" + str(self.accidental) + "\n"
+                        # print(serial_message)
+                        # try:
+                            # self.ser.write(serial_message.encode())
+                        # except:
+                            # print("Serial send failed")
 
                         time.sleep(0.8)
                 # Don't play note if it's already being played
@@ -158,7 +158,7 @@ class SoundGen:
                     self.note_arr[1].start(key_signature_array[self.key_sig][idx + 2], 0.25)
                     self.note_arr[2].start(key_signature_array[self.key_sig][idx + 4], 0.5)
 
-                    serial_message = "CHORD:" + str(idx + 1) + "\n"
+                    serial_message = str(idx + 1) + "\n"
                     print(serial_message)
 
                     try:
@@ -181,13 +181,13 @@ class SoundGen:
                     else:
                         self.key_sig += 1
 
-                    serial_message = "KEY:" + key_signature_names_array[self.key_sig] + "\n"
-                    print(serial_message)
+                    # serial_message = "KEY:" + key_signature_names_array[self.key_sig] + "\n"
+                    # print(serial_message)
 
-                    try:
-                        self.ser.write(serial_message.encode())
-                    except:
-                        print("Serial send failed")
+                    # try:
+                        # self.ser.write(serial_message.encode())
+                    # except:
+                        # print("Serial send failed")
 
                     time.sleep(1)
                 # Don't play chord again if it's currently being played

@@ -1,4 +1,4 @@
-import cv2  # used to capture data from the webcam
+import cv2
 from VideoGet import VideoGet
 from VideoShow import VideoShow
 from Inference import Inference
@@ -9,8 +9,9 @@ octave = 4
 key_sig = 0
 accidental = False
 synth_mode = True
-gamma_adjustment = 1.5
+gamma_adjustment = 2.0
 
+# Define labels for synth mode
 synth_labels_no_accidental = ["A", "B", "C", "D", "E", "F", "G", "Octave", "Accidental", " "]
 synth_labels_accidental = ['Bb', 'C', 'C#', 'Eb', 'F', 'F#', 'Ab', "Octave", "Accidental", " "]
 chord_labels = ["1", "2", "3", "4", "5", "6", "7", "KeySig", " ", " "]
@@ -30,6 +31,21 @@ except Exception as e:
     print(f"An error occurred: {e}")
     ser = None
 
+def enhance_clarity(image):
+    # Use GaussianBlur to reduce noise
+    image = cv2.GaussianBlur(image, (5, 5), 0)
+
+    # Normalize the image
+    cv2.normalize(image, image, 0, 500, cv2.NORM_MINMAX)
+
+    # Apply color correction (example)
+    b, g, r = cv2.split(image)
+    # b = cv2.add(b, 30)  # Increase blue
+    g = cv2.add(g, 60)  # Decrease green
+    image = cv2.merge((b, g, r))
+
+    return image
+
 def threadStart(source=1):
     video_getter = VideoGet(source, gamma_adjustment).start()
     video_shower = VideoShow(video_getter.frame, ser=ser).start()
@@ -46,6 +62,7 @@ def threadStart(source=1):
             break
 
         frame = video_getter.frame
+        frame = enhance_clarity(frame)  # Apply clarity enhancement
         inference.frame = frame
         inference.synth_mode = video_shower.synth_mode
         generator.synth_mode = video_shower.synth_mode
@@ -64,6 +81,6 @@ def threadStart(source=1):
             cv2.putText(frame, "Inference: " + str(chord_labels[index]), (10, 60), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 0, 255), 1)
         cv2.putText(frame, "FPS: " + str(inference.framerate), (10, 30), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 0, 255), 1)
         video_shower.frame = frame
-
+        video_shower.hand_image = inference.hand_image
 
 threadStart(0)
