@@ -16,6 +16,8 @@ def adjust_gamma(image, gamma=1.0):
 
 # assigns a variable for our webcam output and a variable for our hand detector
 cap = cv2.VideoCapture(0)
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 3840)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 2160)
 detector = HandDetector(maxHands=1)
 detector2 = HandDetector(maxHands=1)
 
@@ -24,15 +26,16 @@ offset = 20
 offset0 = 100
 imgSize = 300
 
-gamma_adjustment = 1.0
+gamma_adjustment = 1.5
 
-folder = "Data/KeySig"
+folder = "Data/7"
 counter = 0
 
 while True:
     try:
         # read webcam data and find any hands detected within it
         success, img = cap.read()
+        img = cv2.resize(img, (1280, 720))
         img_copy = img
         img = adjust_gamma(img, gamma_adjustment)
         hands, img = detector.findHands(img, draw=False)
